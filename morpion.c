@@ -2,8 +2,8 @@
  * \file morpion.c
  * \author Romain Rodrigues
  * \brief Morpion
- * \version 1.0
- * \date 30 décembre 2021
+ * \version 2.0
+ * \date 21 avril 2022
  * 
  * Ce programme permet de réaliser une ou des partie(s) de morpion
  */
@@ -96,12 +96,13 @@ void action(MORPION tab, int tour){
     printf("\n");
 }
 
-bool resultat(MORPION tab){
+bool win(MORPION tab){
     int compt1;
     int compt2;
     int trouve1;
     int trouve2;
     int trouve3;
+    int trouve4;
     bool fin;
     compt1=0;
     compt2=0;
@@ -111,25 +112,49 @@ bool resultat(MORPION tab){
         trouve1=0;
         trouve2=0;
         trouve3=0;
+        trouve4=0;
         compt2=0;
         while(compt2<(LARGEUR-1)){
             if((tab[compt1][compt2]==tab[compt1][compt2+1])&&(tab[compt1][compt2]!=' ')){
                 trouve1++;
             }
-            else if((tab[compt2][compt1]==tab[compt2+1][compt1])&&(tab[compt2][compt1]!=' ')){
+            if((tab[compt2][compt1]==tab[compt2+1][compt1])&&(tab[compt2][compt1]!=' ')){
                 trouve2++;
             }
-            else if((tab[compt2][compt2]==tab[compt2+1][compt2+1])&&(tab[compt2][compt2]!=' ')){
+            if((tab[compt2][compt2]==tab[compt2+1][compt2+1])&&(tab[compt2][compt2]!=' ')){
                 trouve3++;
+            }
+            if((tab[compt2][HAUTEUR-(compt2+1)]==tab[compt2+1][HAUTEUR-(compt2+2)])&&(tab[compt2][HAUTEUR-(compt2+1)]!=' ')){
+                trouve4++;
             }
             compt2++;
         }
-        if((trouve1==2)||(trouve2==2)||(trouve3==2)){
+        if((trouve1==2)||(trouve2==2)||(trouve3==2)||(trouve4==2)){
             fin=true;
         }
         compt1++;
     }
     return fin;
+}
+
+bool resultat(MORPION tab){
+    int compt1;
+    int compt2;
+    int nbCases;
+    bool termine;
+    termine=false;
+    nbCases=0;
+    for(compt1=0; compt1<HAUTEUR; compt1++){
+        for(compt2=0; compt2<LARGEUR; compt2++){
+            if(tab[compt1][compt2]!=' '){
+                nbCases++;
+            }
+        }
+    }
+    if(nbCases==9){
+        termine=true;
+    }
+    return termine;
 }
 
 int main(){
@@ -140,6 +165,8 @@ int main(){
     int compt1;
     int compt2;
     bool termine;
+    bool gagne;
+    int nbTours;
     MORPION tableau;
     strcpy(jouer, "oui");
 
@@ -148,15 +175,18 @@ int main(){
 
     while(strcmp(jouer, "non")!=0){
         termine=false;
+        gagne=false;
+        nbTours=0;
         for(compt1=0; compt1<HAUTEUR; compt1++){
             for(compt2=0; compt2<LARGEUR; compt2++){
                 tableau[compt1][compt2]=' ';
             }
         }
 
-        while(!(termine)){
+        while(!(termine)&&!(gagne)){
+            
             tour=1;
-            while((tour<3)&&!(termine)){
+            while((tour<3)&&!(termine)&&!(gagne)){
                 system("clear");
                 if(tour==1){
                     printf("Au tour de %s\n\n", joueur1);
@@ -168,14 +198,19 @@ int main(){
                 sleep(2);
                 action(tableau, tour);
                 termine=resultat(tableau);
-                if(termine==true){
+                gagne=win(tableau);
+                nbTours++;
+                if((termine)||(gagne)){
                     system("clear");
                     affichage(tableau);
-                    if(tour==1){
+                    if((tour==1)&&(gagne)){
                         printf("Le vainqueur est %s\n\n", joueur1);
                     }
-                    else{
+                    else if((tour==2)&&(gagne)){
                         printf("Le vainqueur est %s\n\n", joueur2);
+                    }
+                    else{
+                        printf("Egalité, pas de vainqueur\n\n");
                     }
                     printf("Voulez-vous rejouer (oui ou non) : ");
                     scanf("%s", jouer);
