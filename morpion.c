@@ -2,8 +2,8 @@
  * \file morpion.c
  * \author Romain Rodrigues
  * \brief Morpion
- * \version 1.0
- * \date 30 décembre 2021
+ * \version 2.0
+ * \date 21 avril 2022
  * 
  * Ce programme permet de réaliser une ou plusieurs partie(s) de morpion
  */
